@@ -63,4 +63,56 @@ botonApi.addEventListener('click', function() {
             mensajeSalida.style.borderColor = "#f87171";
             mensajeSalida.textContent = "Error al conectar con el servidor.";
         });
+
+// 1. Al iniciar la app, cargamos los favoritos guardados (o un array vacío si no hay nada)
+let favoritos = JSON.parse(localStorage.getItem('mis_consejos')) || [];
+
+// Referencias a elementos del DOM (asegúrate de que tus IDs coincidan)
+const btnFavorito = document.getElementById('btn-favorito');
+const listaFavoritos = document.getElementById('lista-favoritos');
+
+// Función para renderizar la lista en la interfaz
+function mostrarFavoritos() {
+    listaFavoritos.innerHTML = ''; // Limpiamos la lista antes de volver a pintarla
+    
+    favoritos.forEach((consejo, index) => {
+        const li = document.createElement('li');
+        li.textContent = consejo;
+        
+        // (Opcional) Botón para eliminar un favorito individual
+        const btnEliminar = document.createElement('button');
+        btnEliminar.textContent = '❌';
+        btnEliminar.onclick = () => eliminarFavorito(index);
+        
+        li.appendChild(btnEliminar);
+        listaFavoritos.appendChild(li);
+    });
+}
+
+// 2. Guardar el consejo actual al hacer clic en el botón
+btnFavorito.addEventListener('click', () => {
+    // Supongamos que 'parrafoConsejo' es el elemento donde muestras el texto traducido
+    const textoConsejo = document.getElementById('parrafoConsejo').textContent;
+
+    // Validar que haya texto y que no esté duplicado ya en favoritos
+    if (textoConsejo && !favoritos.includes(textoConsejo)) {
+        favoritos.push(textoConsejo);
+        
+        // Guardar en el navegador convirtiendo el array a texto (JSON)
+        localStorage.setItem('mis_consejos', JSON.stringify(favoritos));
+        
+        // Actualizar la vista
+        mostrarFavoritos();
+    }
+});
+
+// Función para eliminar un favorito
+function eliminarFavorito(index) {
+    favoritos.splice(index, 1);
+    localStorage.setItem('mis_consejos', JSON.stringify(favoritos));
+    mostrarFavoritos();
+}
+
+// Ejecutar al cargar la página para mostrar los favoritos guardados previamente
+mostrarFavoritos();
 });
